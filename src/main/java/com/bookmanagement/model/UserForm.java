@@ -1,4 +1,4 @@
-package com.bookmanagement.entity;
+package com.bookmanagement.model;
 
 import org.springframework.stereotype.Component;
 

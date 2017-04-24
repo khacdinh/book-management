@@ -58,7 +58,7 @@ public class UserController {
         return "login";
     }
 
-    @RequestMapping(value = {"/", "/bookHandle"}, method = RequestMethod.GET)
+    @RequestMapping(value = { "/", "/bookHandle" }, method = RequestMethod.GET)
     public String bookHandle(Model model) {
         model.addAttribute("book", new Book());
         return "bookHandle";

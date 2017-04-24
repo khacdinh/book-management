@@ -23,8 +23,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http	
-        
+        http
+
                 .authorizeRequests()
                     .antMatchers("/resources/**", "/registration","/api/v1/**")
                     .permitAll()
@@ -36,15 +36,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .permitAll()
                     .and()
                 .logout()
-				.permitAll()
-				.and()
-				.csrf().disable();
+                .permitAll().and().csrf().disable();
     }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
     }
-    
-    
+
+
 }

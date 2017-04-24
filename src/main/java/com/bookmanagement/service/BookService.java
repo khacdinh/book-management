@@ -8,17 +8,16 @@ import com.bookmanagement.util.ResultCode;
 
 public interface BookService {
 
-	public List<Book> getAllBooks();
+    public List<Book> getAllBooks();
 
-	public ResultCode addBook(Book book);
-	
-	public ResultCode updateBook(Long id, Book book);
-	
-	public ResultCode deleteBook(Long id);
-	
-	public com.bookmanagement.model.Book findBookById(Long id);
-	
-	public BookDetail viewBookDetail(Long id);
+    public ResultCode addBook(Book book);
 
+    public ResultCode updateBook(Long id, Book book);
+
+    public ResultCode deleteBook(Long id);
+
+    public com.bookmanagement.model.Book findBookById(Long id);
+
+    public BookDetail viewBookDetail(Long id);
 
 }

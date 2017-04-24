@@ -92,21 +92,21 @@
 								<label>Title</label> <input type="text" name="title"
 									class="form-control" ng-model="newBook.title" required>
 
-								<div class="help-block" ng-messages="newBookForm.title.$error"
+								<!-- <div class="help-block" ng-messages="newBookForm.title.$error"
 									ng-if="newBookForm.title.$touched">
 									<p ng-message="required">Title is required.</p>
-								</div>
+								</div> -->
 							</div>
 
 							<div class="form-group"
 								ng-class="{ 'has-error': newBookForm.author.$touched && newBookForm.author.$invalid }">
 								<label>Author</label> <input type="text" name="author"
 									class="form-control" ng-model="newBook.author" required>
-
+								<!--
 								<div class="help-block" ng-messages="newBookForm.author.$error"
 									ng-if="newBookForm.author.$touched">
 									<p ng-message="required">Author is required.</p>
-								</div>
+								</div> -->
 							</div>
 
 							<div class="form-group">
@@ -145,10 +145,10 @@
 								<label>Title</label> <input type="text" name="title"
 									class="form-control" ng-model="selectedBook.title" required>
 
-								<div class="help-block" ng-messages="editBookForm.title.$error"
+								<!-- <div class="help-block" ng-messages="editBookForm.title.$error"
 									ng-if="editBookForm.title.$touched">
 									<p ng-message="required">Title is required.</p>
-								</div>
+								</div> -->
 							</div>
 
 							<div class="form-group"
@@ -156,10 +156,10 @@
 								<label>Author</label> <input type="text" name="author"
 									class="form-control" ng-model="selectedBook.author" required>
 
-								<div class="help-block" ng-messages="editBookForm.author.$error"
+								<!-- <div class="help-block" ng-messages="editBookForm.author.$error"
 									ng-if="editBookForm.author.$touched">
 									<p ng-message="required">Author is required.</p>
-								</div>
+								</div> -->
 							</div>
 
 							<div class="form-group">
