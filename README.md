@@ -1,4 +1,4 @@
-# Registration and Login Example with Spring Security, Spring Boot, Spring Data JPA, HSQL, JSP
+# Login And Registration and Login with Spring Security, Spring Boot, Spring Data JPA, HSQL, JSP
 # Book Management with SpringBoot and Angular1.
 
 ## Guide
