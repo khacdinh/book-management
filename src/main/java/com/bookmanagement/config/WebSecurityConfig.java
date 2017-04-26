@@ -26,8 +26,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
 
                 .authorizeRequests()
-                    .antMatchers("/resources/**", "/registration","/api/v1/**")
+                    .antMatchers("/resources/**", "/registration")
                     .permitAll()
+                    .antMatchers("/api/v1/bookRest/**").authenticated()
                     .anyRequest()
                     .authenticated()
                     .and()
@@ -36,7 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .permitAll()
                     .and()
                 .logout()
-                .permitAll().and().csrf().disable();
+                .permitAll().and().exceptionHandling().accessDeniedPage("/404").and().csrf().disable();
     }
 
     @Autowired

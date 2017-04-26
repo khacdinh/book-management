@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bookmanagement.entity.Book;
+import com.bookmanagement.log.LoggingUtil;
 import com.bookmanagement.model.BookDetail;
 import com.bookmanagement.model.UserForm;
 import com.bookmanagement.repository.BookRepository;
@@ -27,6 +28,9 @@ public class BookServiceImpl implements BookService {
     @Autowired
     private UserForm userForm;
 
+    @Autowired
+    private LoggingUtil LoggingUtil;
+
     @Override
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
@@ -41,6 +45,7 @@ public class BookServiceImpl implements BookService {
         book.setDateUpdate(new Date());
         book.setCreateBy(userForm.getUserName());
         this.bookRepository.save(book);
+        LoggingUtil.getBookHandleLogger().info("addBook: {}", book);
         logger.debug("Add new Book Service" + userForm.getUserName());
         return ResultCode.SUCCESS;
     }
@@ -51,6 +56,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public ResultCode updateBook(Long id, Book book) {
         logger.debug("update Book with bookId = {}", id);
+        LoggingUtil.getBookHandleLogger().info("updateBook Id: {}, author: {}, description : {} ", id, book.getAuthor(), book.getDescription());
         Book bookUpdate = bookRepository.findOne(id);
         if (bookUpdate != null) {
             bookUpdate.setDescription(book.getDescription());
@@ -71,6 +77,7 @@ public class BookServiceImpl implements BookService {
      */
     @Override
     public ResultCode deleteBook(Long id) {
+        LoggingUtil.getBookHandleLogger().info("deleteBook Id: {}", id);
         logger.debug("Delete Book with bookId = {}", id);
         this.bookRepository.delete(id);
         return ResultCode.SUCCESS;
@@ -81,6 +88,7 @@ public class BookServiceImpl implements BookService {
      */
     @Override
     public com.bookmanagement.model.Book findBookById(Long id) {
+        LoggingUtil.getBookHandleLogger().info("deleteBook book Id: {}", id);
         Book bookEntity = bookRepository.findOne(id);
         com.bookmanagement.model.Book bookModel = new com.bookmanagement.model.Book();
         if (bookEntity != null) {
@@ -92,6 +100,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDetail viewBookDetail(Long id) {
         Book book = bookRepository.findOne(id);
+        LoggingUtil.getBookHandleLogger().info("viewBookDetail {}",book.toString());
         BookDetail bookDetail = new BookDetail();
         BeanUtils.copyProperties(book, bookDetail);
         bookDetail.setDateCreate(book.getDateCreate() != null ? DateFormatUtils.format(book.getDateCreate(), "yyyy-MM-dd HH:mm:ss") : "");
