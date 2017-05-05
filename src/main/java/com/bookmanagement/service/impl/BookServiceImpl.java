@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.bookmanagement.service.impl;
 
 import java.util.Date;
@@ -8,14 +11,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.bookmanagement.entity.Book;
+import com.bookmanagement.exception.MyResourceNotFoundException;
 import com.bookmanagement.log.LoggingUtil;
 import com.bookmanagement.model.BookDetail;
 import com.bookmanagement.model.UserForm;
 import com.bookmanagement.repository.BookRepository;
 import com.bookmanagement.service.BookService;
+import com.bookmanagement.util.BookCommon;
 import com.bookmanagement.util.ResultCode;
 
 @Service
@@ -100,12 +106,31 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDetail viewBookDetail(Long id) {
         Book book = bookRepository.findOne(id);
-        LoggingUtil.getBookHandleLogger().info("viewBookDetail {}",book.toString());
+        LoggingUtil.getBookHandleLogger().info("viewBookDetail {}", book.toString());
         BookDetail bookDetail = new BookDetail();
         BeanUtils.copyProperties(book, bookDetail);
         bookDetail.setDateCreate(book.getDateCreate() != null ? DateFormatUtils.format(book.getDateCreate(), "yyyy-MM-dd HH:mm:ss") : "");
         bookDetail.setDateUpdate(book.getDateUpdate() != null ? DateFormatUtils.format(book.getDateUpdate(), "yyyy-MM-dd HH:mm:ss") : "");
         return bookDetail;
+    }
+
+    @Override
+    public Page<Book> getBooks(int pageNumber) {
+        Page<Book> resultPage = bookRepository.findAll(BookCommon.getPageRequest(pageNumber));
+        if (pageNumber > resultPage.getTotalPages()) {
+            throw new MyResourceNotFoundException();
+        }
+        return resultPage;
+    }
+
+    
+    @Override
+    public Page<Book> findBook(String keyWord, int pageNumber) {
+        Page<Book> resultPage = bookRepository.findByTitleOrAuthor(keyWord, BookCommon.getPageRequest(pageNumber));
+        if (pageNumber > resultPage.getTotalPages()) {
+            throw new MyResourceNotFoundException();
+        }
+        return resultPage;
     }
 
 }
