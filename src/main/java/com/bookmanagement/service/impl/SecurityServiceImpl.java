@@ -1,5 +1,7 @@
 package com.bookmanagement.service.impl;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,43 +12,45 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import com.bookmanagement.model.JbossEjb;
 import com.bookmanagement.model.UserForm;
 import com.bookmanagement.service.SecurityService;
 
 @Service
 public class SecurityServiceImpl implements SecurityService {
-    @Autowired
-    private AuthenticationManager authenticationManager;
+	@Autowired
+	private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+	@Autowired
+	private UserDetailsService userDetailsService;
+	
 
-    @Autowired
-    private UserForm userForm;
-    private static final Logger logger = LoggerFactory.getLogger(SecurityServiceImpl.class);
+	@Autowired
+	private UserForm userForm;
+	private static final Logger logger = LoggerFactory.getLogger(SecurityServiceImpl.class);
 
-    @Override
-    public String findLoggedInUsername() {
-        Object userDetails = SecurityContextHolder.getContext().getAuthentication().getDetails();
-        if (userDetails instanceof UserDetails) {
-            userForm.setUserName(((UserDetails) userDetails).getUsername());
-            return ((UserDetails) userDetails).getUsername();
-        }
+	@Override
+	public String findLoggedInUsername() {
+		Object userDetails = SecurityContextHolder.getContext().getAuthentication().getDetails();
+		if (userDetails instanceof UserDetails) {
+			userForm.setUserName(((UserDetails) userDetails).getUsername());
+			return ((UserDetails) userDetails).getUsername();
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    @Override
-    public void autologin(String username, String password) {
-        userForm.setUserName(username);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+	@Override
+	public void autologin(String username, String password) {
+		userForm.setUserName(username);
+		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
 
-        authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+		authenticationManager.authenticate(usernamePasswordAuthenticationToken);
 
-        if (usernamePasswordAuthenticationToken.isAuthenticated()) {
-            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            logger.debug("Auto login %s successfully!",username);
-        }
-    }
+		if (usernamePasswordAuthenticationToken.isAuthenticated()) {
+			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+			logger.debug("Auto login %s successfully!", username);
+		}
+	}
 }

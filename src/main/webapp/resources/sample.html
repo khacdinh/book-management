@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="source">
+<main class="maker-CreateExchange_holder" layout:fragment="content">
+    <form name="manageBank" action="#" method="get" th:action="@{${T(com.myclear.fpx.admin.web.constant.UrlConstant).BANK_MGMT_MANAGE_BANK_FIND}}" th:object="${manageBank}" >
+        <input type="hidden" th:field="*{pageNumber}" />
+        <input type="hidden" th:field="*{orderField}" />
+        <input type="hidden" th:field="*{orderAscending}" />
+        <input type="hidden" th:field="*{noRecordToShow}" />
+        <input type="hidden" name="fromLocation" value="1"/>
+        <div class="wrapper" th:with="user=${#httpSession.getAttribute(T(com.myclear.fpx.admin.web.constant.SessionConstant).user_data)}">
+            <h2 class="exchange_filter" th:text="#{function.title.list.bank}">Show Bank</h2>
+            <div class="spacer20"></div>
+            <div class="toggler">
+                <a href="#" class="toggler-title" th:text="#{button.search}">Search</a>
+                <div class="toggler-body">
+                    <table class="tcol-4" >
+                        <tbody>
+                        <tr>
+                            <td valign="top" class="search-exchange-td" >
+                                <table class="label-left">
+                                    <tbody>
+                                    <tr >
+                                        <td th:text="#{field.bank.id}">Bank ID</td>
+                                        <td><input type="text" placeholder=""  maxlength="50" th:field="*{bankId}"/></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td valign="top" class="search-exchange-td" >
+                                <table class="label-left">
+                                    <tbody>
+                                    <tr >
+                                        <td th:text="#{field.bank.name.search}">Bank Name</td>
+                                        <td><input type="text" placeholder=""  maxlength="50" th:field="*{bankName}"/></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td valign="top" class="search-exchange-td">
+                                <table class="label-left">
+                                    <tbody>
+                                    <tr>
+                                        <div class="status">
+                                            <td th:text="#{field.bank.management.status}">Status</td>
+                                            <td>
+                                                <div class="selector">
+                                                    <div style="font-weight:normal" class="texter" >51111110</div>
+                                                    <select id="status" name="status" th:unless="${#lists.isEmpty(status)}" th:field="*{status}" >
+                                                        <option th:each="obj : ${status}" th:text="${obj.status}" th:value="${obj.value}">view type</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </div>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td>
+                                    <span class="float-right">
+                                        <input name="searchButton" onclick="javascript:goPage(1)" type="button" class="blue-button" th:value="#{button.search}"/>
+                                    </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+            <div class="clearfix" style="padding-right: 5px; margin-right: 15px;" th:if="(${user.authType} == ${T(com.myclear.fpx.admin.core.common.enums.AuthTypeEnum).MAKER})">
+                <br/>
+                <span style="right-pa" class="float-right">
+                    <input th:onclick="'doCreateBank()'" type="button" class="blue-button" th:value="#{button.create}"/>
+                </span>
+            </div>
+
+
+            <!-- MAKER VIEW -->
+            <div th:if="(${user.authType} == ${T(com.myclear.fpx.admin.core.common.enums.AuthTypeEnum).MAKER})">
+                <div class="float-right"></div>
+                <h3 th:text="#{mesg.please.select.bank}">Please Select Bank</h3>
+                <div class="spacer20"></div>
+
+                <table style="width:100%">
+                    <thead>
+                    <tr  class="header_light_bg" >
+                        <th th:text="#{field.bank.management.action}" >Action</th>
+                        <th th:attrappend="class=*{orderField} == 'bankId' ? (*{orderAscending} == true ? 'sortable-col is-sort-asc' : 'sortable-col is-sort-desc') : 'sortable-col'" th:onclick="'sortIt(\'bankId\')'" th:utext="'&lt;div class=sortable-label&gt;' + #{field.bank.id} + '&lt;i class=sortable-icon&gt;&lt;/i&gt;&lt;/div&gt;'">Exchange Id</th>
+                        <th th:attrappend="class=*{orderField} == 'bankname' ? (*{orderAscending} == true ? 'sortable-col is-sort-asc' : 'sortable-col is-sort-desc') : 'sortable-col'" th:onclick="'sortIt(\'bankname\')'" th:utext="'&lt;div class=sortable-label&gt;' + #{field.bank.name.search} + '&lt;i class=sortable-icon&gt;&lt;/i&gt;&lt;/div&gt;'">Exchange Name</th>
+                        <th th:text="#{field.bank.table.contact.1}">Contact 1</th>
+                        <th th:text="#{field.bank.table.email.1}">Email 1</th>
+                        <th th:text="#{field.bank.table.contact.2}">Contact 2</th>
+                        <th th:text="#{field.bank.table.email.2}">Email 2</th>
+                        <th th:if="(*{status}==${T(com.myclear.fpx.admin.core.common.enums.BankStatusEnum).MODIFIED.value})" th:text="#{field.bank.table.comment}">Comment</th>
+                    </tr>
+                    </thead>
+                    <tbody th:unless="${#lists.isEmpty(result.page.content)}" th:each="obj,objStat : ${result.page.content}">
+                    <tr class="header_dark_bg">
+                        <td align="center"  style='white-space: nowrap'>
+                            <a  class="blue-button small"
+                                th:onclick="'doViewProfile(\'' + ${obj.bankId} + '\',\'' + *{status} + '\', \'' + ${obj.makerId} + '\', \'' + ${obj.appDtStr} + '\')'"
+                                href="#/"
+                                th:text="#{button.profile}">Profile</a>
+                        </td>
+                        <td th:text="${obj.bankId}">bankId</td>
+                        <td th:text="${obj.bankName}">bankName</td>
+                        <td th:text="${obj.contact1}">contact1</td>
+                        <td th:text="${obj.email1}">email1</td>
+                        <td th:text="${obj.contact2}">Contact2</td>
+                        <td th:text="${obj.email2}">email2</td>
+                        <td th:if="(*{status}==${T(com.myclear.fpx.admin.core.common.enums.BankStatusEnum).MODIFIED.value})"  th:text="${obj.comments}">comment</td>
+                    </tr>
+                    </tbody>
+                    <tbody th:if="${#lists.isEmpty(result.page.content)}" >
+                    <tr class="header_dark_bg" >
+                        <td align="center" style="text-align:center" th:text="#{mesg.no.record.found}" colspan="8"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+            <!-- CHECKER VIEW -->
+            <div th:if="(${user.authType} == ${T(com.myclear.fpx.admin.core.common.enums.AuthTypeEnum).CHECKER})">
+                <div class="float-right"></div>
+                <h3 th:text="#{mesg.please.select.bank}">Please Select Bank</h3>
+                <div class="spacer20"></div>
+
+                <table style="width:100%">
+                    <thead>
+                    <tr  class="header_light_bg" >
+                        <th th:text="#{field.exchange.management.action}" >Action</th>
+                        <th th:attrappend="class=*{orderField} == 'bankId' ? (*{orderAscending} == true ? 'sortable-col is-sort-asc' : 'sortable-col is-sort-desc') : 'sortable-col'" th:onclick="'sortIt(\'bankId\')'" th:utext="'&lt;div class=sortable-label&gt;' + #{field.bank.id} + '&lt;i class=sortable-icon&gt;&lt;/i&gt;&lt;/div&gt;'">Exchange Id</th>
+                        <th th:attrappend="class=*{orderField} == 'bankname' ? (*{orderAscending} == true ? 'sortable-col is-sort-asc' : 'sortable-col is-sort-desc') : 'sortable-col'" th:onclick="'sortIt(\'bankname\')'" th:utext="'&lt;div class=sortable-label&gt;' + #{field.bank.name.search} + '&lt;i class=sortable-icon&gt;&lt;/i&gt;&lt;/div&gt;'">Exchange Name</th>
+                        <th th:text="#{field.bank.table.contact.1}">Contact 1</th>
+                        <th th:text="#{field.bank.table.email.1}">Email 1</th>
+                        <th th:text="#{field.bank.table.contact.2}">Contact 2</th>
+                        <th th:text="#{field.bank.table.email.2}">Email 2</th>
+                        <th th:if="(*{status}==${T(com.myclear.fpx.admin.core.common.enums.BankStatusEnum).MODIFIED.value})" th:text="#{field.bank.table.comment}">Comment</th>
+                    </tr>
+                    </thead>
+                    <tbody th:unless="${#lists.isEmpty(result.page.content)}" th:each="obj,objStat : ${result.page.content}">
+                    <tr class="header_dark_bg">
+                        <td align="center"  style='white-space: nowrap' th:if="(*{status}==${T(com.myclear.fpx.admin.core.common.enums.BankStatusEnum).PENDING.value})">
+                            <a  class="blue-button small"
+                                th:if="(${obj.wizardStatus} != ${T(com.myclear.fpx.admin.core.common.enums.BankCreationWizardStatusEnum).CREATION_APPROVED.statusCode} AND ${obj.wizardStatus} != ${T(com.myclear.fpx.admin.core.common.enums.BankCreationWizardStatusEnum).CERTIFICATE_SUBMITTED.statusCode})"
+                                th:onclick="'doApproveRejectBank(\'' + ${obj.bankId} + '\', \'' + ${obj.status} + '\')'"
+                                href="#/"
+                                th:text="#{button.approve.reject}">Approve/Reject</a>
+                            <a  class="blue-button small"
+                                th:if="(${obj.wizardStatus} == ${T(com.myclear.fpx.admin.core.common.enums.BankCreationWizardStatusEnum).CREATION_APPROVED.statusCode} OR ${obj.wizardStatus}==${T(com.myclear.fpx.admin.core.common.enums.BankCreationWizardStatusEnum).CERTIFICATE_SUBMITTED.statusCode})"
+                                th:onclick="'doViewProfile(\'' + ${obj.bankId} + '\', \'' + *{status} + '\', \'' + ${obj.makerId} + '\', \'' + ${obj.appDtStr} + '\')'"
+                                href="#/"
+                                th:text="#{button.profile}">Profile</a>
+                        </td>
+                        <td align="center"  style='white-space: nowrap' th:unless="(*{status}==${T(com.myclear.fpx.admin.core.common.enums.BankStatusEnum).PENDING.value})">
+                            <a  class="blue-button small"
+                                th:onclick="'doViewProfile(\'' + ${obj.bankId} + '\',\'' + *{status} + '\', \'' + ${obj.makerId} + '\', \'' + ${obj.appDtStr} + '\')'"
+                                href="#/"
+                                th:text="#{button.profile}">Profile</a>
+                        </td>
+                        <td th:text="${obj.bankId}">bankId</td>
+                        <td th:text="${obj.bankName}">bankName</td>
+                        <td th:text="${obj.contact1}">contact1</td>
+                        <td th:text="${obj.email1}">email1</td>
+                        <td th:text="${obj.contact2}">Contact2</td>
+                        <td th:text="${obj.email2}">email2</td>
+                        <td th:if="(*{status}==${T(com.myclear.fpx.admin.core.common.enums.BankStatusEnum).MODIFIED.value})"  th:text="${obj.comments}">comment</td>
+                    </tr>
+                    </tbody>
+                    <tbody th:if="${#lists.isEmpty(result.page.content)}" >
+                    <tr class="header_dark_bg" >
+                        <td align="center" style="text-align:center" th:text="#{mesg.no.record.found}" colspan="8"></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+            <div class="row" th:unless="${#lists.isEmpty(result)}">
+                <div class="col" th:if="${not #lists.isEmpty(result.page.content)}">
+                    <span th:text="#{field.record.per.page}"/>:
+                    <div class="selector inline-block" style="width: 60px;">
+                        <div class="texter" th:text="*{noRecordToShow}">51111110</div>
+                        <select name="recordSizeSelection" th:unless="${#lists.isEmpty(recordPerPage)}" onchange="bottomRecordSizeSelection(this);">
+                            <option th:each="obj : ${recordPerPage}" th:text="${obj.description}" th:selected="*{noRecordToShow} == ${obj.pageSize}" th:value="${obj.pageSize}">record size here</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="pagination" th:unless="${#lists.isEmpty(result)}" th:utext="${T(com.myclear.fpx.admin.core.common.util.PageUtil).createPagination(result.page.number, result.page.totalElements, result.page.size)}">
+                        <ul>
+                            <li class="arrow"><a href="#prev">&lt;</a></li>
+                            <li><a href="#1">1</a></li>
+                            <li><a href="#2">2</a></li>
+                            <li class="current"><a href="#3">3</a></li>
+                            <li><a href="#4">4</a></li>
+                            <li><a href="#5">5</a></li>
+                            <li class="arrow"><a href="#next">&gt;</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <form name="createBank" method="get" action="#" th:action="@{${T(com.myclear.fpx.admin.web.constant.UrlConstant).BANK_MGMT_CREATE_BANK}}">
+        <input type="hidden" name="fromLocation" value="1"/>
+    </form>
+
+    <form name="authorizeCreateBankRequest" method="get" action="#" th:action="@{${T(com.myclear.fpx.admin.web.constant.UrlConstant).BANK_MGMT_APPROVE_REJECT_CREATE_BANK}}">
+        <input type="hidden" name="bankId"/>
+        <input type="hidden" name="fromLocation" value="1"/>
+    </form>
+
+    <form name="viewBank" method="get" action="#" th:action="@{${T(com.myclear.fpx.admin.web.constant.UrlConstant).BANK_MGMT_VIEW_BANK}}">
+        <input type="hidden" name="bankId"/>
+        <input type="hidden" name="status"/>
+        <input type="hidden" name="makerId"/>
+        <input type="hidden" name="appDtStr"/>
+        <input type="hidden" name="fromLocation" value="1"/>
+    </form>
+
+
+    <form name="approveRejectEditBank" method="get" action="#" th:action="@{${T(com.myclear.fpx.admin.web.constant.UrlConstant).BANK_MGMT_APPROVE_REJECT_EDIT_BANK}}">
+        <input type="hidden" name="bankId"/>
+        <input type="hidden" name="updateStatus"/>
+        <input type="hidden" name="fromLocation" value="1"/>
+    </form>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        function bottomRecordSizeSelection(obj) {
+            $('form[name=manageBank] input[name=noRecordToShow]').val($(obj).val());
+            goPage(1);
+        }
+
+        function filterRecordSizeSelection() {
+            goPage(1);
+        }
+
+        function goPage(page) {
+            $('form[name=manageBank] input[name=searchButton]').attr("disabled", true);
+            $('form[name=manageBank] input[name=pageNumber]').val(page);
+            $('form[name=manageBank]').attr("action", [[@{${T(com.myclear.fpx.admin.web.constant.UrlConstant).BANK_MGMT_MANAGE_BANK_FIND}}]]);
+            $('form[name=manageBank]').submit();
+        }
+
+
+        function doCreateBank() {
+            $('form[name=createBank]').submit();
+        }
+
+        function doViewProfile(bankId, status, makerId, appDtStr) {
+            $('form[name=viewBank] input[name=bankId]').val(bankId);
+            $('form[name=viewBank] input[name=status]').val(status);
+            $('form[name=viewBank] input[name=makerId]').val(makerId);
+            $('form[name=viewBank] input[name=appDtStr]').val(appDtStr);
+            $('form[name=viewBank]').submit();
+        }
+
+
+
+        function doApproveRejectBank(bankId, objStatus) {
+            if (objStatus == [[@{${T(com.myclear.fpx.admin.core.common.enums.StatusActionEnum).NEW.value}}]]) {
+                $('form[name="authorizeCreateBankRequest"] input[name=bankId]').val(bankId);
+                $('form[name="authorizeCreateBankRequest"]').submit();
+            } else {
+                $('form[name=approveRejectEditBank] input[name=bankId]').val(bankId);
+                $('form[name=approveRejectEditBank] input[name=updateStatus]').val(objStatus);
+                $('form[name=approveRejectEditBank]').submit();
+            }
+        }
+
+        function sortIt(fieldName) {
+            $('form[name=manageBank] input[name=searchButton]').attr("disabled", true);
+            $('form[name=manageBank] input[name=pageNumber]').val(1);
+
+            if ($('form[name=manageBank] input[name=orderField]').val() == fieldName) {
+                if ($('form[name=manageBank] input[name=orderAscending]').val() == 'true') {
+                    $('form[name=manageBank] input[name=orderAscending]').val(false);
+                } else {
+                    $('form[name=manageBank] input[name=orderAscending]').val(true);
+                }
+            } else {
+                $('form[name=manageBank] input[name=orderField]').val(fieldName);
+                $('form[name=manageBank] input[name=orderAscending]').val(true);
+            }
+
+            $('form[name=manageBank]').attr("action", [[@{${T(com.myclear.fpx.admin.web.constant.UrlConstant).BANK_MGMT_MANAGE_BANK_FIND}}]]);
+            $('form[name=manageBank]').submit();
+        }
+
+        /*]]>*/
+    </script>
+</main>
+</html>

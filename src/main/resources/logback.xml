@@ -13,7 +13,7 @@
 		</layout>
 	</appender>
 
-	<appender name="ACC_POSTING_FILE"
+	<appender name="BOOK_HANDLE_FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>logs/book_handle.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
@@ -41,6 +41,6 @@
 		<appender-ref ref="STDOUT" />
 	</logger>
 	<logger name="book_handle.logger" level="INFO">
-		<appender-ref ref="ACC_POSTING_FILE" />
+		<appender-ref ref="BOOK_HANDLE_FILE" />
 	</logger>
 </configuration>

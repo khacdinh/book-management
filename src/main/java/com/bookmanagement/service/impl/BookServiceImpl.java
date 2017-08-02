@@ -6,6 +6,8 @@ package com.bookmanagement.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,7 @@ import com.bookmanagement.entity.Book;
 import com.bookmanagement.exception.MyResourceNotFoundException;
 import com.bookmanagement.log.LoggingUtil;
 import com.bookmanagement.model.BookDetail;
+import com.bookmanagement.model.JbossEjb;
 import com.bookmanagement.model.UserForm;
 import com.bookmanagement.repository.BookRepository;
 import com.bookmanagement.service.BookService;
@@ -41,6 +44,18 @@ public class BookServiceImpl implements BookService {
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
+    
+    @Autowired(required = true)
+	@Resource(name = "ejbCazh")
+	private JbossEjb cazhEjb;
+
+	@Autowired(required = true)
+	@Resource(name = "ejbFpxAdmin")
+	private JbossEjb fpxAdminEjb;
+
+	@Autowired(required = true)
+	@Resource(name = "ejbFpxAdminController")
+	private JbossEjb fpxAdminControllerEjb;
 
     /**
      * Service add new book
@@ -123,7 +138,6 @@ public class BookServiceImpl implements BookService {
         return resultPage;
     }
 
-    
     @Override
     public Page<Book> findBook(String keyWord, int pageNumber) {
         Page<Book> resultPage = bookRepository.findByTitleOrAuthor(keyWord, BookCommon.getPageRequest(pageNumber));
